@@ -10,20 +10,20 @@ export class FrontierStore {
   > = {}
   constructor(snapshot?: FrontierStore['state']) {}
 
-  get(
-    acknowledgmentType: keyof AcknowledgedGarbageCollectionFrontierMap,
-    acknowledgingEntityId: string,
-    garbageCollectionTargetId: string
-  ) {
-    this
+  get<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
+    crdtType: K,
+    targetId: string
+  ): Array<AcknowledgedGarbageCollectionFrontierMap[K]> {
+    return []
   }
 
-  set(
-    acknowledgement: AcknowledgedGarbageCollectionFrontierMap[keyof AcknowledgedGarbageCollectionFrontierMap],
-    acknowledgmentType: keyof AcknowledgedGarbageCollectionFrontierMap,
-    acknowledgingEntityId: string,
-    acknowledgementTargetId: string
-  ) {
-    this.state[acknowledgementTargetId] = [acknowledgmentType, acknowledgement]
+  set<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
+    crdtType: K,
+    targetId: string,
+    acknowledgement: AcknowledgedGarbageCollectionFrontierMap[K],
+    acknowledgingEntityId: string
+  ): void {
+    this.state[targetId]
+    return
   }
 }
