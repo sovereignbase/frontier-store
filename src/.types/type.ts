@@ -11,9 +11,10 @@ import type { CRTextAck } from '@sovereignbase/convergent-replicated-text'
 
 import type { CRStructAck } from '@sovereignbase/convergent-replicated-struct'
 
-export type AcknowledgedGarbageCollectionFrontier =
-  | CRMapAck
-  | CRSetAck
-  | CRListAck
-  | CRTextAck
-  | CRStructAck<Record<string, unknown>>
+export type AcknowledgedGarbageCollectionFrontierMap = {
+  set: CRSetAck
+  map: CRMapAck
+  text: CRTextAck
+  list: CRListAck
+  struct: CRStructAck<Record<string, unknown>>
+}
