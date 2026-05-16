@@ -53,6 +53,10 @@
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
     "@playwright/test": "^1.60.0",
+    "@sovereignbase/convergent-replicated-list": "^1.2.0",
+    "@sovereignbase/convergent-replicated-set": "^1.0.1",
+    "@sovereignbase/convergent-replicated-struct": "^1.2.3",
+    "@sovereignbase/convergent-replicated-text": "^1.0.4",
     "@types/node": "^25.8.0",
     "c8": "^11.0.0",
     "edge-runtime": "^4.0.1",
@@ -72,5 +76,8 @@
   "bugs": {
     "url": "https://github.com/sovereignbase/package-name/issues"
   },
-  "homepage": "https://sovereignbase.dev/package-name"
+  "homepage": "https://sovereignbase.dev/package-name",
+  "dependencies": {
+    "@sovereignbase/convergent-replicated-map": "^1.0.3"
+  }
 }
