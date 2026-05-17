@@ -23,7 +23,6 @@ export class FrontierStore {
     acknowledgement: AcknowledgedGarbageCollectionFrontierMap[K],
     acknowledgingEntityId: string
   ): void {
-    this.state[targetId]
     return
   }
 }
