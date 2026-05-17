@@ -1,7 +1,4 @@
-import type {
-  CRMapSnapshot,
-  CRMapAck,
-} from '@sovereignbase/convergent-replicated-map'
+import type { CRMapAck } from '@sovereignbase/convergent-replicated-map'
 
 import type { CRSetAck } from '@sovereignbase/convergent-replicated-set'
 
@@ -17,4 +14,11 @@ export type AcknowledgedGarbageCollectionFrontierMap = {
   text: CRTextAck
   list: CRListAck
   struct: CRStructAck<Record<string, unknown>>
+}
+
+export type FrontierStoreSnapshot = {
+  [K in keyof AcknowledgedGarbageCollectionFrontierMap]?: Record<
+    string,
+    Record<string, AcknowledgedGarbageCollectionFrontierMap[K]>
+  >
 }

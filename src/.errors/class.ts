@@ -1,12 +1,12 @@
-export type PackageNameErrorCode = 'EXAMPLE_ERROR_CODE'
+export type FrontierStoreErrorCode = 'EXAMPLE_ERROR_CODE'
 
-export class PackageNameError extends Error {
-  readonly code: PackageNameErrorCode
+export class FrontierStoreError extends Error {
+  readonly code: FrontierStoreErrorCode
 
-  constructor(code: PackageNameErrorCode, message?: string) {
+  constructor(code: FrontierStoreErrorCode, message?: string) {
     const detail = message ?? code
-    super(`{@sovereignbase/package-name} ${detail}`)
+    super(`{@sovereignbase/frontier-store} ${detail}`)
     this.code = code
-    this.name = 'PackageNameError'
+    this.name = 'FrontierStoreError'
   }
 }
