@@ -36,9 +36,7 @@ export class FrontierStore {
     kind: K,
     targetId: string
   ): Array<AcknowledgedGarbageCollectionFrontierMap[K]> {
-    return Object.values(this.state[kind]?.[targetId] ?? {}) as Array<
-      AcknowledgedGarbageCollectionFrontierMap[K]
-    >
+    return Object.values(this.state[kind]?.[targetId] ?? {})
   }
 
   /**
@@ -83,27 +81,32 @@ export class FrontierStore {
     targetId: string,
     entityId?: string
   ): void {
-    if (typeof kind === 'string' && typeof targetId === 'string') {
-      if (typeof entityId === 'string') {
-        delete this.state[kind]?.[targetId]?.[entityId]
+    if (typeof kind !== 'string' || typeof targetId !== 'string') return
 
-        if (Object.keys(this.state[kind]?.[targetId] ?? {}).length === 0) {
-          delete this.state[kind]?.[targetId]
-        }
+    const kindState = this.state[kind]
+    if (!kindState) return
 
-        if (Object.keys(this.state[kind] ?? {}).length === 0) {
-          delete this.state[kind]
-        }
+    if (typeof entityId === 'string') {
+      const targetState = kindState[targetId]
+      if (!targetState) return
 
-        return
-      }
+      delete targetState[entityId]
 
-      delete this.state[kind]?.[targetId]
+      if (Object.keys(targetState).length > 0) return
 
-      if (Object.keys(this.state[kind] ?? {}).length === 0) {
-        delete this.state[kind]
-      }
+      delete kindState[targetId]
+
+      if (Object.keys(kindState).length > 0) return
+
+      delete this.state[kind]
+      return
     }
+
+    delete kindState[targetId]
+
+    if (Object.keys(kindState).length > 0) return
+
+    delete this.state[kind]
   }
 
   /**
