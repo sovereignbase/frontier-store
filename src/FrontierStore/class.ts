@@ -1,4 +1,5 @@
 import type {
+  FrontierStoreEntry,
   FrontierStoreSnapshot,
   AcknowledgedGarbageCollectionFrontierMap,
 } from '../.types/type.js'
@@ -31,7 +32,7 @@ export class FrontierStore {
    * @param targetId - Identifier of the CRDT target.
    * @returns The acknowledgement frontiers stored for the target.
    */
-  get<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
+  getFrontiers<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
     kind: K,
     targetId: string
   ): Array<AcknowledgedGarbageCollectionFrontierMap[K]> {
@@ -52,7 +53,7 @@ export class FrontierStore {
    * @param entityId - Identifier of the acknowledging entity.
    * @param acknowledgement - Acknowledgement frontier emitted by a CRDT replica.
    */
-  set<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
+  setFrontier<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
     kind: K,
     targetId: string,
     entityId: string,
@@ -77,7 +78,7 @@ export class FrontierStore {
    * @param targetId - Identifier of the CRDT target.
    * @param entityId - Optional identifier of the acknowledging entity.
    */
-  delete<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
+  deleteFrontier<K extends keyof AcknowledgedGarbageCollectionFrontierMap>(
     kind: K,
     targetId: string,
     entityId?: string
@@ -108,9 +109,38 @@ export class FrontierStore {
   /**
    * Returns the current frontier store snapshot.
    *
+   * Called automatically by `JSON.stringify`.
+   *
    * @returns The current snapshot.
    */
-  snapshot(): FrontierStoreSnapshot {
+  toJSON(): FrontierStoreSnapshot {
     return this.state
+  }
+
+  /**
+   * Return this snapshot as a JSON string.
+   */
+  toString(): string {
+    return JSON.stringify(this)
+  }
+  /**
+   * Returns the Node.js console inspection representation.
+   */
+  [Symbol.for('nodejs.util.inspect.custom')](): FrontierStoreSnapshot {
+    return this.toJSON()
+  }
+  /**
+   * Returns the Deno console inspection representation.
+   */
+  [Symbol.for('Deno.customInspect')](): FrontierStoreSnapshot {
+    return this.toJSON()
+  }
+  /**
+   * Iterates over current entries.
+   */
+  *[Symbol.iterator](): IterableIterator<FrontierStoreEntry> {
+    for (const entry of Object.entries(this.state)) {
+      yield entry as FrontierStoreEntry
+    }
   }
 }

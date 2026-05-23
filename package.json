@@ -21,7 +21,7 @@
     "./package.json": "./package.json"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "files": [
     "dist",
@@ -53,12 +53,12 @@
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
     "@playwright/test": "^1.60.0",
-    "@sovereignbase/convergent-replicated-set": "^1.0.1",
+    "@sovereignbase/convergent-replicated-list": "^1.3.2",
     "@sovereignbase/convergent-replicated-map": "^1.0.3",
-    "@sovereignbase/convergent-replicated-text": "^1.0.4",
-    "@sovereignbase/convergent-replicated-list": "^1.2.0",
+    "@sovereignbase/convergent-replicated-set": "^1.0.1",
     "@sovereignbase/convergent-replicated-struct": "^1.2.3",
-    "@types/node": "^25.8.0",
+    "@sovereignbase/convergent-replicated-text": "^1.1.1",
+    "@types/node": "^25.9.1",
     "c8": "^11.0.0",
     "edge-runtime": "^4.0.1",
     "fast-glob": "^3.3.3",
@@ -68,7 +68,7 @@
     "tsup": "^8.5.1",
     "typedoc": "^0.28.19",
     "typescript": "^5.9.3",
-    "wrangler": "4.86.0"
+    "wrangler": "^4.94.0"
   },
   "repository": {
     "type": "git",
@@ -77,6 +77,5 @@
   "bugs": {
     "url": "https://github.com/sovereignbase/frontier-store/issues"
   },
-  "homepage": "https://sovereignbase.dev/frontier-store",
-  "dependencies": {}
+  "homepage": "https://sovereignbase.dev/frontier-store"
 }
