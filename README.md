@@ -16,7 +16,7 @@ Sovereignbase CRDT replicas.
 
 - Runtimes: Node >= 22, modern browsers, Bun, Deno, Cloudflare Workers, Edge Runtime.
 - Module format: ESM + CommonJS.
-- Required globals / APIs: `structuredClone`.
+- Required globals / APIs: none beyond the target JavaScript runtime.
 - TypeScript: bundled types.
 
 ## Goals
@@ -25,7 +25,7 @@ Sovereignbase CRDT replicas.
 - Provide the exact frontier arrays expected by `garbageCollect(frontiers)`.
 - Support `CRSet`, `CRMap`, `CRList`, `CRText`, and `CRStruct` acknowledgement types.
 - Stay storage-adapter-neutral: persist the JSON snapshot wherever the application already stores metadata.
-- Avoid mutability leaks by cloning incoming and outgoing snapshots/frontiers.
+- Keep the runtime small and explicit; callers that need defensive copies can clone snapshots at the storage boundary.
 
 ## Installation
 
@@ -152,14 +152,15 @@ frontiers for the target. Empty target and kind buckets are cleaned up.
 
 ## Runtime behavior
 
-### Safety and copying semantics
+### Snapshot semantics
 
-- The constructor clones the provided snapshot.
-- `setFrontier()` clones the provided acknowledgement.
-- `getFrontiers()` returns detached acknowledgement copies.
-- `toJSON()`, `JSON.stringify()`, inspection symbols, and iteration expose detached snapshots.
+- The constructor uses the provided snapshot as the backing state.
+- `setFrontier()` stores the provided acknowledgement value.
+- `getFrontiers()` returns the currently stored acknowledgement values.
+- `toJSON()`, `JSON.stringify()`, inspection symbols, and iteration expose the current snapshot model.
 - `deleteFrontier()` is idempotent for missing kinds, targets, and entities.
 - The store does not validate CRDT frontier internals; the corresponding CRDT package remains the authority for accepting or ignoring a frontier.
+- Clone snapshots before passing them to or reading them from the store when your application needs mutation isolation.
 
 ### Convergence and compaction
 
@@ -178,11 +179,13 @@ npm run test
 The test suite covers:
 
 - Core `FrontierStore` storage, replacement, deletion, cleanup, iteration, inspection, and serialization behavior.
-- Detached snapshot/frontier semantics for constructor input, `getFrontiers()`, `toJSON()`, and iteration.
+- Snapshot/frontier exposure semantics for constructor input, `getFrontiers()`, `toJSON()`, and iteration.
 - ESM and CommonJS package interop through JSON snapshots.
 - End-to-end runtime matrix for Node ESM/CJS, Bun ESM/CJS, Deno ESM, Cloudflare Workers ESM, Edge Runtime ESM, and browsers via Playwright.
 - Integration with `CRSet`, `CRMap`, `CRList`, `CRText`, and `CRStruct`: collect `ack` events, store them by target/entity, retrieve complete frontier arrays, run `garbageCollect()`, settle replicas, and hydrate snapshots.
 - Coverage on built `dist/**/*.js` with `100%` statements, branches, functions, and lines via `c8`.
+
+Current status on Node `v22.14.0` (`win32 x64`): `npm run test` passes.
 
 ## Benchmarks
 
@@ -198,6 +201,19 @@ The benchmark suite measures `FrontierStore` orchestration paths:
 - entity and target deletion
 - `toJSON()`
 - iteration
+
+Last measured on Node `v22.14.0` (`win32 x64`):
+
+| group   | scenario                         |   n |     ops |   ms | ms/op |       ops/sec |
+| ------- | -------------------------------- | --: | ------: | ---: | ----: | ------------: |
+| `class` | `constructor / hydrate snapshot` | 200 |     100 | 0.06 |  0.00 |  1,675,041.88 |
+| `class` | `setFrontier / string ack`       | 200 |     100 | 0.40 |  0.00 |    247,647.35 |
+| `class` | `setFrontier / struct ack`       | 200 |     100 | 0.29 |  0.00 |    350,877.19 |
+| `class` | `getFrontiers`                   | 200 |     100 | 0.24 |  0.00 |    422,832.98 |
+| `class` | `deleteFrontier / entity`        | 200 |     100 | 0.63 |  0.01 |    158,027.81 |
+| `class` | `deleteFrontier / target`        | 200 |     100 | 1.22 |  0.01 |     81,913.50 |
+| `class` | `toJSON`                         | 200 |     100 | 0.05 |  0.00 |  1,862,197.39 |
+| `class` | `iterator`                       | 200 | 100,000 | 5.42 |  0.00 | 18,448,482.61 |
 
 ## License
 

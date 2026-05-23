@@ -147,7 +147,7 @@ export async function runFrontierStoreSuite(api, options = {}) {
     assertJsonEqual(store.toJSON(), {})
   })
 
-  await runTest('constructor reads and outputs detached snapshots', () => {
+  await runTest('constructor and reads expose the live snapshot model', () => {
     const snapshot = {
       struct: {
         'document-1': {
@@ -159,13 +159,13 @@ export async function runFrontierStoreSuite(api, options = {}) {
 
     snapshot.struct['document-1'].alice.title = 'mutated-before-read'
     assertJsonEqual(store.getFrontiers('struct', 'document-1'), [
-      { title: ACKS.struct.title },
+      { title: 'mutated-before-read' },
     ])
 
     const frontiers = store.getFrontiers('struct', 'document-1')
     frontiers[0].title = 'mutated-returned-frontier'
     assertJsonEqual(store.getFrontiers('struct', 'document-1'), [
-      { title: ACKS.struct.title },
+      { title: 'mutated-returned-frontier' },
     ])
 
     const json = store.toJSON()
@@ -173,13 +173,13 @@ export async function runFrontierStoreSuite(api, options = {}) {
     assertJsonEqual(store.toJSON(), {
       struct: {
         'document-1': {
-          alice: { title: ACKS.struct.title },
+          alice: { title: 'mutated-returned-json' },
         },
       },
     })
   })
 
-  await runTest('iteration yields detached kind snapshots', () => {
+  await runTest('iteration yields current kind snapshots', () => {
     const store = new FrontierStore()
     store.setFrontier('struct', 'document-1', 'alice', ACKS.struct)
 
@@ -187,7 +187,9 @@ export async function runFrontierStoreSuite(api, options = {}) {
     assertEqual(entries.length, 1)
     entries[0][1]['document-1'].alice.title = 'mutated-entry'
 
-    assertJsonEqual(store.getFrontiers('struct', 'document-1'), [ACKS.struct])
+    assertJsonEqual(store.getFrontiers('struct', 'document-1'), [
+      { ...ACKS.struct, title: 'mutated-entry' },
+    ])
     assertJsonEqual(JSON.parse(store.toString()), store.toJSON())
   })
 
